@@ -36,7 +36,8 @@ jobs:
         id: run-tests
         run: npm run test
       - name: Upload test report
-        if: steps.run-tests.outcome == 'failure'
+        if: failure() && steps.run-tests.outcome == 'failure'
+        # note failure() checks if the previous step failed, and steps.run-tests.outcome == 'failure' checks the specific step outcome and must to be added
         #steps is the contexts variables, for more conxtexts check the web, note how it is linked to other step by id and then the outcome, MainContent.jsx was modified to force an error
         uses: actions/upload-artifact@v4
         with:
