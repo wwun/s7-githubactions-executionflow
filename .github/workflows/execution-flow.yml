@@ -38,7 +38,7 @@ jobs:
       - name: Upload test report
         if: steps.run-tests.outcome == 'failure'
         #steps is the contexts variables, for more conxtexts check the web, note how it is linked to other step by id and then the outcome, MainContent.jsx was modified to force an error
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: test.json
