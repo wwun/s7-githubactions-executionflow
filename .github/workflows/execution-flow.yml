@@ -13,10 +13,10 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
-        #if: steps.cache.outputs.cache-hit != 'true' 
+        if: steps.cache.outputs.cache-hit != 'true' 
         # this condition checks if the cache was hit, if not it will install dependencies, check the previous step which has an id, output is the result of that step and cache-hit is how is named by the system
         run: npm ci
       - name: Lint code
@@ -30,7 +30,7 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true' 
@@ -58,7 +58,7 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true' 
