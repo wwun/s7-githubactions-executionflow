@@ -2,6 +2,7 @@
  on: push
  jobs:
   build:
+    continue-on-error: true # allows to continue with the exceution of each value in matrix even if one fails
     strategy:
       matrix:
         node-version: [12, 14, 16, 18]  # specify versions of nodes will be used
