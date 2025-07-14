@@ -7,15 +7,29 @@ on:
         required: false
         default: dist
         type: string
+    outputs:
+      result: # this is an output that can be used in the calling workflow
+        description: The result of the deployment operation
+        value: ${{ jobs.deploy.outcome }} # this will be the output of the deploy step
+    #secrets:
+      #some-secret:
+        #required: false # this is an example of a secret that can be used in the reusable workflow, it is not required but can be used if needed
 jobs:
+  outputs:
+    runs-on: ubuntu-latest
+    outputs:
+      outcome: ${{ steps.set-result.outputs.step-result }} # this will be the output of the deploy step, it can be used in the calling workflow
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Get Code
-        uses: actions/donwload-artifact@v4
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact-name }} # this will use the input passed from the calling workflow
       - name: List files
         run: ls
       - name: Output information
         run: echo "Deploying & uploading"
+      - name: Set result output
+        id: set-result
+        run: echo "step-result=success" >> $GITHUB_OUTPUT  # this is used to set the output of the step

@@ -77,6 +77,14 @@ jobs:
     uses: ./.github/workflows/reusable.yml  # this is the reusable workflow, it will execute the deploy job defined in reusable.yml    
     with:
       artifact-name: dist-files  # this is the input passed to the reusable workflow, it will be used in the reusable workflow to download the artifact
+    #secrets:
+      #some-secret: (aca falta el simbo de $){{ secrets.SOME_SECRET }}  # this is an example of a secret that can be used in the reusable workflow, it is not required but can be used if needed, note it must be the same identifier as in the reusable workflow
+  print-deploy-result:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print deploy output
+        run: eho "${{ needs.deploy.outputs.result }}"  # this will print the output of the deploy job, which is defined in the reusable workflow
   report:
     needs: [lint, deploy] # define that this job will finish at the end
     if: failure() 
