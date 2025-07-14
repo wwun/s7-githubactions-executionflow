@@ -39,6 +39,7 @@ jobs:
         if: failure() && steps.run-tests.outcome == 'failure'
         # note failure() checks if the previous step failed, and steps.run-tests.outcome == 'failure' checks the specific step outcome and must to be added
         #steps is the contexts variables, for more conxtexts check the web, note how it is linked to other step by id and then the outcome, MainContent.jsx was modified to force an error
+        #as failure there are success, always and cancelled too
         uses: actions/upload-artifact@v4
         with:
           name: test-report
@@ -77,3 +78,11 @@ jobs:
         run: ls
       - name: Deploy
         run: echo "Deploying..."
+  report:
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "something went wrong"
+          echo "${{ github }}"
