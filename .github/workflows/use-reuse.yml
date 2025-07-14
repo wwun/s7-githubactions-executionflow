@@ -1,0 +1,87 @@
+name: Using Reusable Workflow
+on:
+  push:
+    branches:
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true' 
+        # this condition checks if the cache was hit, if not it will install dependencies, check the previous step which has an id, output is the result of that step and cache-hit is how is named by the system
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true' 
+        # this condition checks if the cache was hit, if not it will install dependencies, check the previous step which has an id, output is the result of that step and cache-hit is how is named by the system
+        run: npm ci
+      - name: Test code
+        id: run-tests
+        run: npm run test
+      - name: Upload test report
+        if: failure() && steps.run-tests.outcome == 'failure'
+        # note failure() checks if the previous step failed, and steps.run-tests.outcome == 'failure' checks the specific step outcome and must to be added
+        #steps is the contexts variables, for more conxtexts check the web, note how it is linked to other step by id and then the outcome, MainContent.jsx was modified to force an error
+        #as failure there are success, always and cancelled too
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test.json
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true' 
+        # this condition checks if the cache was hit, if not it will install dependencies, check the previous step which has an id, output is the result of that step and cache-hit is how is named by the system
+        run: npm ci
+      - name: Build website
+        id: build-website
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-files
+          path: dist
+  deploy:
+    needs: build
+    uses: ./.github/workflows/reusable.yml  # this is the reusable workflow, it will execute the deploy job defined in reusable.yml    
+  report:
+    needs: [lint, deploy] # define that this job will finish at the end
+    if: failure() 
+    # and will be exceuted only if there is a failure in the previous jobs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "something went wrong"
+          echo "${{ github }}"
