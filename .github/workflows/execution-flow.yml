@@ -16,6 +16,8 @@ jobs:
           path: ~/.npm
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true' 
+        # this condition checks if the cache was hit, if not it will install dependencies, check the previous step which has an id, output is the result of that step and cache-hit is how is named by the system
         run: npm ci
       - name: Lint code
         run: npm run lint
@@ -31,6 +33,8 @@ jobs:
           path: ~/.npm
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true' 
+        # this condition checks if the cache was hit, if not it will install dependencies, check the previous step which has an id, output is the result of that step and cache-hit is how is named by the system
         run: npm ci
       - name: Test code
         id: run-tests
@@ -57,6 +61,8 @@ jobs:
           path: ~/.npm
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true' 
+        # this condition checks if the cache was hit, if not it will install dependencies, check the previous step which has an id, output is the result of that step and cache-hit is how is named by the system
         run: npm ci
       - name: Build website
         id: build-website
@@ -79,8 +85,9 @@ jobs:
       - name: Deploy
         run: echo "Deploying..."
   report:
-    needs: [lint, deploy]
-    if: failure()
+    needs: [lint, deploy] # define that this job will finish at the end
+    if: failure() 
+    # and will be exceuted only if there is a failure in the previous jobs
     runs-on: ubuntu-latest
     steps:
       - name: Output information
