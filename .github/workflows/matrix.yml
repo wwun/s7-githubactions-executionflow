@@ -5,8 +5,14 @@
     continue-on-error: true # allows to continue with the exceution of each value in matrix even if one fails
     strategy:
       matrix:
-        node-version: [12, 14, 16, 18]  # specify versions of nodes will be used
+        node-version: [14, 16, 18]  # specify versions of nodes will be used
         operating-system: [ubuntu-latest, windows-latest] #specify operating systems
+        include:  # this is used to include more values in the matrix, in this case we are specifying that we want to run the job with node version 20 and ubuntu-latest, note is a combination
+          - node-version: 20
+            operating-system: ubuntu-latest
+        exclude:
+          - node-version: 12
+            operating-system: windows-latest # this is used to exclude which combination we dont want to execute
     runs-on: ${{ matrix.operating-system }} # here is being specified that every oerating sytem established in the matrix will be used, all of them in parallel
     steps:
       - name: Get Code
