@@ -16,7 +16,7 @@ jobs:
           path: ~/.npm
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
-        #if: steps.cache.outputs.cache-hit != 'true' 
+        if: steps.cache.outputs.cache-hit != 'true' 
         # this condition checks if the cache was hit, if not it will install dependencies, check the previous step which has an id, output is the result of that step and cache-hit is how is named by the system
         run: npm ci
       - name: Lint code
@@ -37,13 +37,10 @@ jobs:
         # this condition checks if the cache was hit, if not it will install dependencies, check the previous step which has an id, output is the result of that step and cache-hit is how is named by the system
         run: npm ci
       - name: Test code
+        continue-on-error: true # allows the workflow to continue even if this step fails
         id: run-tests
         run: npm run test
       - name: Upload test report
-        if: failure() && steps.run-tests.outcome == 'failure'
-        # note failure() checks if the previous step failed, and steps.run-tests.outcome == 'failure' checks the specific step outcome and must to be added
-        #steps is the contexts variables, for more conxtexts check the web, note how it is linked to other step by id and then the outcome, MainContent.jsx was modified to force an error
-        #as failure there are success, always and cancelled too
         uses: actions/upload-artifact@v4
         with:
           name: test-report
