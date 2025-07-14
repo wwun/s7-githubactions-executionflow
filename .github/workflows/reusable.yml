@@ -15,11 +15,9 @@ on:
       #some-secret:
         #required: false # this is an example of a secret that can be used in the reusable workflow, it is not required but can be used if needed
 jobs:
-  outputs:
-    runs-on: ubuntu-latest
+  deploy:
     outputs:
       outcome: ${{ steps.set-result.outputs.step-result }} # this will be the output of the deploy step, it can be used in the calling workflow
-  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Get Code
