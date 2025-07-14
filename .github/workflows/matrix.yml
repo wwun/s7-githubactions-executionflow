@@ -1,0 +1,20 @@
+ name: Matrix Demo
+ on: push
+ jobs:
+  build:
+    strategy:
+      matrix:
+        node-version: [12, 14, 16, 18]  # specify versions of nodes will be used
+        operating-system: [ubuntu-latest, windows-latest] #specify operating systems
+    runs-on: ${{ matrix.operating-system }} # here is being specified that every oerating sytem established in the matrix will be used, all of them in parallel
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v4
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version}} # similar as the previous one, here is being specified that every node version established in the matrix will be used, all of them in parallel
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build project
+        run: npm run build
