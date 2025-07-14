@@ -1,8 +1,21 @@
 name: Reusable deploy
-on: workflow_call # this is used to call this workflow from another workflow
+on: 
+  workflow_call: # this is used to call this workflow from another workflow  
+    inputs: # inputs are used to pass parameters to the reusable workflow
+      artifact-name:  # this is the name of the artifact that will be uploaded
+        description: The name of the deployable artifact files
+        required: false
+        default: dist
+        type: string
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Get Code
+        uses: actions/donwload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }} # this will use the input passed from the calling workflow
+      - name: List files
+        run: ls
       - name: Output information
         run: echo "Deploying & uploading"
